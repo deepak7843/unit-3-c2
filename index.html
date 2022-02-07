@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Home</title>
+  <style>
+    body{
+      margin: 0;
+    }
+    img{
+      width: 160px;
+      height: 160px;
+      object-fit: cover;
+    }
+    #navbar{
+      background-color: rgb(218, 198, 173);
+      display: flex;
+      flex-direction: row-reverse;
+      padding: 20px;
+    }
+    #navbar>*{
+      margin-left: 12px;
+      margin-right: 12px;
+    }
+    #menu{
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 15px;
+      width: 85%;
+      margin: auto;
+      margin-top: 25px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="navbar">
+    <!--Add menu divs here-->
+  
+    
+    <div id="count"></div>
+    <a href="cart.html">cart</a>
+    <div id="signup">SignUp</div>
+    <div id="signin"> SignIn</div>
+    <div id="menu1"> Menu</div>
+
+    <div id="count"></div>
+  </div>
+
+  <div id="menu">
+
+    <!--Show indian dishes here in grid format-->
+    <!-- add an add to cart button to each dish, give it HTML id as 'addtocart' -->
+
+  </div>
+
+  <script>
+    let url = `https://www.themealdb.com/api/json/v1/1/filter.php?a=Indian`
+    async function getProducts() {
+      try {
+        let productslist = await fetchProducts(url)
+        productslist = productslist.meals;
+        renderproducts(productslist)
+        console.log(productslist);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getProducts()
+
+    let cart=localStorage.getItem("cart")
+    if(!cart){
+      cart=[]
+      localStorage.setItem("cart" , JSON.stringify(cart))
+      refreshcartcount(cart)
+    } else{
+      cart= JSON.parse(cart)
+      refreshcartcount(cart)
+    }
+    function refreshcartcount(cart){
+      let cartcount= document.getElementById("count")
+      cartcount.textContent=cart.length
+    }
+
+    function fetchProducts(url) {
+      return fetch(url)
+
+        .then(function (res) {
+          return res.json()
+        })
+        .then(function (res) {
+          return res;
+        })
+        .catch(function (err) {
+          console.log(err);
+        })
+
+    }
+
+
+    // idMeal: "52807"
+    // strMeal: "Baingan Bharta"
+    // strMealThumb: "https://www.themealdb.com/images/media/meals/urtpqw1487341253.jpg"
+
+    function renderproducts(products) {
+      let menu = document.getElementById("menu")
+      menu.innerHTML = "";
+
+
+
+      products.forEach(function (prod) {
+        let prodcard = document.createElement("div")
+
+        let image = document.createElement("img")
+        image.src = prod.strMealThumb
+
+        let title = document.createElement("p")
+        title.textContent = prod.strMeal
+
+        let price = document.createElement("p")
+        price.textContent = Math.floor(Math.random() * 500) + " $"
+
+        let addtocartbutton= document.createElement("button")
+    addtocartbutton.textContent="add to cart"
+    addtocartbutton.onclick= function(event){
+     
+      addtocart(prod)
+    }
+    prodcard.append(image,title,price,addtocartbutton)
+    menu.append(prodcard)
+      });
+
+      function addtocart(prod){
+        let cart=JSON.parse(localStorage.getItem("cart"))
+        cart.push(prod)
+      }
+      localStorage.setItem("cart", JSON.stringify(cart))
+
+    }
+
+    
+
+  
+  </script>
+</body>
+
+</html>
